@@ -5,8 +5,6 @@ import lombok.Setter;
 
     @Getter
     @Setter
-public class LikeFilter {
-    private Integer size = 10;
-    private Integer page = 0;
-    private String searchKey;
+public class LikeFilter extends BaseFilter{
+
 }

@@ -28,13 +28,16 @@ public class UserRepositoryImpl implements UserCompositeRepository {
 
 
         String countSql = sql.toString().replace("select t", "select count(t)");
-        TypedQuery<User> query = entityManager.createQuery(sql.toString(), User.class);
+        TypedQuery<User> query = entityManager.createQuery(sql.toString(), User.class)
+                .setFirstResult(filter.getPage() * filter.getSize()).setMaxResults(filter.getSize());
         TypedQuery<Long> countQuery = entityManager.createQuery(countSql, Long.class);
 
         if (StringUtils.isNotBlank(filter.getSearchKey())) {
             query.setParameter("searchKey", filter.getSearchForQuery());
             countQuery.setParameter("searchKey", filter.getSearchForQuery());
         }
+
+        // select * from User where 1=1 limit 3 offset 0
 
         return new PageImpl<>(query.getResultList(), filter.getPageable(), countQuery.getSingleResult());
     }

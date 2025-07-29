@@ -23,4 +23,13 @@ public class Post extends BaseEntity {
 
     private Integer likesCount = 0;
     private Integer dislikesCount = 0;
+
+
+    public String getUserName() {
+        if (this.user == null) {
+            return null;
+        }
+        return this.user.getName();
+    }
+
 }

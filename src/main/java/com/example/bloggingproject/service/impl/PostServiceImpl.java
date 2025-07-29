@@ -29,7 +29,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostResponse> getPostsList(PostFilter filter) {
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findALlByFilter(filter).getContent();
         return posts.stream().map(this::toResponse).toList();
     }
 
@@ -37,6 +37,7 @@ public class PostServiceImpl implements PostService {
     public Object createPost(PostRequest request) {
         Post post = new Post();
         toEntity(request, post);
+
         User user = userRepository.findById(request.getUserId()).orElseThrow(EntityNotFoundException::new);
         post.setUser(user);
         postRepository.save(post);
@@ -61,42 +62,43 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Object react(LikeRequest request) {
-//        Post post = postRepository.findById(request.getPost().getId())
-//                .orElseThrow(() -> new RuntimeException("Post not found"));
-//        User user = userRepository.findById(request.getUser().getId())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        Optional<Like> likeExists = likeRepository.findByUserAndPost(user, post);
-//
-//        if (likeExists.isPresent()) {
-//            Like like = likeExists.get();
-//
-//            if (like.getReaction() == request.getReaction()) {
-//                likeRepository.delete(like);
-//                updateReactionCount(post, request.getReaction(), -1);
-//            } else {
-//                updateReactionCount(post, like.getReaction(), -1);
-//                updateReactionCount(post, request.getReaction(), 1);
-//                like.setReaction(request.getReaction());
-//                likeRepository.save(like);
-//            }
-//        } else {
-//            Like like = new Like();
-//            like.setPost(request.getPost());
-//            like.setUser(request.getUser());
-//            like.setReaction(request.getReaction());
-//            likeRepository.save(like);
-//            updateReactionCount(post, request.getReaction(), 1);
-//        }
-//        postRepository.save(post);
-//        return toResponse(post);
-        return null;
+        Post post = postRepository.findById(request.getPostId()).orElseThrow(EntityNotFoundException::new);
+
+        User user = userRepository.findById(request.getUserId()).orElseThrow(EntityNotFoundException::new);
+
+
+        Optional<Like> likeExists = likeRepository.findByUserAndPost(user, post);
+
+        if (likeExists.isPresent()) {
+            Like like = likeExists.get();
+
+            if (like.getReaction() == request.getReaction()) {
+                likeRepository.delete(like);
+                updateReactionCount(post, request.getReaction(), -1);
+            } else {
+                updateReactionCount(post, like.getReaction(), -1);
+                updateReactionCount(post, request.getReaction(), 1);
+                like.setReaction(request.getReaction());
+                likeRepository.save(like);
+            }
+        } else {
+            Like like = new Like();
+            like.setPost(post);
+            like.setUser(user);
+            like.setReaction(request.getReaction());
+            likeRepository.save(like);
+            updateReactionCount(post, request.getReaction(), 1);
+        }
+        postRepository.save(post);
+        return toResponse(post);
+
     }
 
     private PostResponse toResponse(Post post) {
         if (post == null) return null;
 
         PostResponse response = new PostResponse();
+        response.setId(post.getId());
         response.setUser(post.getUser().getName());
         response.setTitle(post.getTitle());
         response.setDescription(post.getDescription());
