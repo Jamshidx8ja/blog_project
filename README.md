@@ -1,3 +1,6 @@
+Here we come, mate! Let's take a little look at 😌
+
+
 **medAppo — Medical Appointment Service**
 
 A simple, pragmatic **Spring-based** backend for 
