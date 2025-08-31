@@ -34,6 +34,8 @@ Layered structure: controller, dto, service (and service.impl), repository, mapp
 
 Dynamic repository filtering for appointments (date/time, doctor, patient, status) 
 
-MapStruct mappers to convert between entities and DTOs Simple pagination support for list endpoints
+MapStruct mappers to convert between entities and DTOs 
+
+Simple pagination support for list endpoints
 
 
